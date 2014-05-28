@@ -1,0 +1,61 @@
+<!DOCTYPE html> 
+<html>
+<head>
+    <title>Table</title>
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
+    <script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+    <script src="http://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+    <script type="text/javascript" src="/static/js/script.js"></script>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+</head>
+<body>
+    {% if users %}
+        <table border="1" style="width:300px">
+            <thead>
+                <tr>
+                    <th>id</th>
+                    <th>Имя</th>
+                    <th>Зарплата</th>
+                    <th>Дата поступления на работу</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}  
+                    <tr>
+                        <td>{{ user.id }}</td>
+                        <td>{{ user.name }}</td>
+                        <td>{{ user.paycheck }}</td>
+                        <td class="date">{{ user.date_joined }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <strong>There are no users present.</strong>
+    {% endif %}
+    <hr>
+    {% if rooms %}
+        <table border="1" style="width:300px">
+            <thead>
+                <tr>
+                    <th>id</th>
+                    <th>Отдел</th>
+                    <th>Вместимость</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for room in rooms %}  
+                    <tr>
+                        <td>{{ room.id }}</td>
+                        <td>{{ room.department }}</td>
+                        <td>{{ room.spots }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <strong>There are no rooms present.</strong>
+    {% endif %}
+</body>
+</html>
+
