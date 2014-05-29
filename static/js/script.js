@@ -14,7 +14,7 @@ $(function () {
         });
     });
 
-    $(".date").click(function () {
+    $("td.datepicker").click(function () {
         var OriginalContent = $(this).text();
         $(this).html("<input type='text' value='" + OriginalContent + "' />");
         $(this).children().datepicker({ onSelect: function(date) {
