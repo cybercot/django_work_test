@@ -16,6 +16,8 @@ $(document).ready(function() {
             			if (e.which == 13) {
                 			var newContent = $(this).val();
                 			$(this).parent().text(newContent);
+                			var id = $(this).parent().siblings('td.id');
+                			$.get('/table/update_data/', {'id':id, 'category_id':catid, 'newContent':newContent})
             			}
         			});
         			$(this).children().blur(function(){

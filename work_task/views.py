@@ -7,10 +7,7 @@ from django.http import HttpResponse
 
 def table(request):
 	context = RequestContext(request)
-	users = Users.objects.order_by('name')
-	rooms = Rooms.objects.order_by('spots')
-	context_dict = {'users':users,'rooms':rooms}
-	return render_to_response('work_task/base.html', context_dict, context)
+	return render_to_response('work_task/base.html', {}, context)
 
 def upload_table(request):
 	context = RequestContext(request)
@@ -26,7 +23,7 @@ def upload_table(request):
 			if users:
 				response_data = response_data+'<table class="table table-striped"><thead><tr><th>id</th><th>Имя</th><th>Зарплата</th><th>Дата поступления на работу</th></tr></thead><tbody>'
 				for user in users:
-					response_data=response_data+'<tr><td>'+str(user.id)+'</td><td>'+str(user.name)+'</td><td>'+str(user.paycheck)+'</td><td class="datepicker">'+str(user.date_joined)+'</td></tr>'
+					response_data=response_data+'<tr><td class="id">'+str(user.id)+'</td><td>'+str(user.name)+'</td><td>'+str(user.paycheck)+'</td><td class="datepicker">'+str(user.date_joined)+'</td></tr>'
 				response_data=response_data+'</tbody></table>'
 			else:
 				response_data='<strong>There are no users present.</strong>'
@@ -36,8 +33,22 @@ def upload_table(request):
 			if rooms:
 				response_data=response_data+'<table class="table table-striped"><thead><tr><th>id</th><th>Отдел</th><th>Вместимость</th></tr></thead><tbody>'
 				for room in rooms:
-					response_data=response_data+'<tr><td>'+str(room.id)+'</td><td>'+str(room.department)+'</td><td>'+str(room.spots)+'</td></tr>'
+					response_data=response_data+'<tr><td class="id">'+str(room.id)+'</td><td>'+str(room.department)+'</td><td>'+str(room.spots)+'</td></tr>'
 				response_data=response_data+'</tbody></table>'
 			else:
 				response_data='<strong>There are no rooms present.</strong>'
 	return HttpResponse(response_data)
+
+def update_data(request):
+	context = RequestContext(request)
+	cat_name = None
+	if request.method == "GET":
+		cat_name = request.GET['category_id']
+		cat_id = request.GET['id']
+		newContent = request.GET['newContent']
+	if cat_name:
+		if cat_name == "Users":
+			row = Users.object.get(id=int(cat_id))
+			row.name=newContent
+			row.save()
+	return HttpResponse("Hello")
