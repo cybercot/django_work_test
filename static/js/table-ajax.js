@@ -9,15 +9,17 @@ $(document).ready(function() {
                $('.table-responsive').html(data);
                $('#hidden-mesage').hide()
                $("td").click(function () {
+              var class_id = $(this).attr('class');
         			var OriginalContent = $(this).text();
         			$(this).html("<input type='text' value='" + OriginalContent + "' />");
         			$(this).children().focus();
+              var tr_number = $(this).prevAll('.id').html();
         			$(this).children().keypress(function (e) {
             			if (e.which == 13) {
                 			var newContent = $(this).val();
                 			$(this).parent().text(newContent);
-                			var id = $(this).parent().siblings('td.id');
-                			$.get('/table/update_data/', {'id':id, 'category_id':catid, 'newContent':newContent})
+                			var data = tr_number+'-'+catid+'-'+newContent+'-'+class_id;
+                			$.get('/table/update_data/', {'data':data});
             			}
         			});
         			$(this).children().blur(function(){
@@ -25,10 +27,15 @@ $(document).ready(function() {
         			});
     			});
                $("td.datepicker").click(function () {
+              var class_id = $(this).attr('class');
        				var OriginalContent = $(this).text();
+              var tr_number = $(this).prevAll('.id').html();
         			$(this).html("<input type='text' value='" + OriginalContent + "' />");
         			$(this).children().datepicker({ onSelect: function(date) {
-            			$(this).parent().text(date)
+            			$(this).parent().text(date);
+                  var newContent = date;
+                  var data = tr_number+'-'+catid+'-'+newContent+'-'+class_id;
+                  $.get('/table/update_data/', {'data':data});
         			}}).focus();
     			});
            });
