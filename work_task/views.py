@@ -4,12 +4,15 @@ from django.template import RequestContext
 from django.shortcuts import render_to_response
 from work_task.models import Users,Rooms
 from django.http import HttpResponse
+from work_task.forms import UsersForm
 
 def table(request):
+	# View for index page
 	context = RequestContext(request)
 	return render_to_response('work_task/base.html', {}, context)
 
 def upload_table(request):
+	# View for upload table functionality
 	context = RequestContext(request)
 	cat_name = None
 	response_data = None
@@ -18,26 +21,9 @@ def upload_table(request):
 		cat_name = request.GET['category_id']
 	if cat_name:
 		if cat_name == 'Users':
-			response_data='<h2 class="sub-header">Users</h2>'
-			users = Users.objects.order_by('name')
-			if users:
-				response_data = response_data+'<table class="table table-striped"><thead><tr><th>id</th><th>Имя</th><th>Зарплата</th><th>Дата поступления на работу</th></tr></thead><tbody>'
-				for user in users:
-					response_data=response_data+'<tr><td class="id">'+str(user.id)+'</td><td class="name">'+str(user.name)+'</td><td class="paycheck">'+str(user.paycheck)+'</td><td class="datepicker">'+str(user.date_joined)+'</td></tr>'
-				response_data=response_data+'</tbody></table>'
-			else:
-				response_data='<strong>There are no users present.</strong>'
-		else:
-			rooms = Rooms.objects.order_by('spots')
-			response_data = '<h2 class="sub-header">Rooms</h2>'
-			if rooms:
-				response_data=response_data+'<table class="table table-striped"><thead><tr><th>id</th><th>Отдел</th><th>Вместимость</th></tr></thead><tbody>'
-				for room in rooms:
-					response_data=response_data+'<tr><td class="id">'+str(room.id)+'</td><td>'+str(room.department)+'</td><td>'+str(room.spots)+'</td></tr>'
-				response_data=response_data+'</tbody></table>'
-			else:
-				response_data='<strong>There are no rooms present.</strong>'
-	return HttpResponse(response_data)
+			users = Users.objects.order_by('id')
+			return render_to_response('work_task/upload_table.html', {'users':users}, context)
+		
 
 def update_data(request):
 	context = RequestContext(request)
@@ -51,9 +37,24 @@ def update_data(request):
 				row.name = newContent
 			elif class_id == 'paycheck':
 				row.paycheck = newContent
-			elif class_id == 'date_joined':
+			elif class_id == 'datepicker':
+				m,d,y = newContent.split('/')
+				newContent = y+'-'+m+'-'+d
 				row.date_joined = newContent
 			else:
 				row.id = newContent
-			row.save()
+		else:
+			row = Rooms.objects.get(id=int(cat_id))
+			if class_id == "department":
+				row.department = newContent
+			elif class_id == "spots":
+				row.spots = newContent
+			else:
+				row.id = newContent
+		row.save()
 	return HttpResponse("Hello")
+
+def add_users(request):
+	context = RequestContext(request)
+	form = UsersForm()
+	return render_to_response('work_task/add_users.html', {'form':form}, context)

@@ -1,10 +1,5 @@
+#!/usr/bin/env python2
+# -*- coding: utf-8 -*-
 from django.db import models
-
-class Users(models.Model):
-	name = models.CharField(max_length=100)
-	paycheck = models.IntegerField(default=0)
-	date_joined = models.DateField()
-
-class Rooms(models.Model):
-	department = models.CharField(max_length=100)
-	spots = models.IntegerField(default=0)
+Users = type("Users",(models.Model,), {"name":models.CharField(max_length=100, help_text="Имя"),"paycheck":models.IntegerField(default=0, help_text="Зарплата"),"date_joined":models.DateField(help_text="Дата поступления на работу"),"__module__":"work_task.models"})
+Rooms = type("Rooms",(models.Model,), {"department":models.CharField(max_length=100, help_text="Отдел"),"spots":models.IntegerField(default=0, help_text="Вместимость"),"spots_2":models.IntegerField(default=0, help_text="Вместимость_2"),"__module__":"work_task.models"})

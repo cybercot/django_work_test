@@ -1,0 +1,23 @@
+<h2 class="sub-header">Users</h2>
+<table class="table table-striped">
+	<thead>
+		<tr>
+			<th>id</th>
+			<th>Имя</th>
+			<th>Зарплата</th>
+			<th>Дата поступления на работу</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for user in users %}
+				<tr>
+					<td class="id">{{ user.id }}</td>
+					<td class="name">{{ user.name }}</td>
+					<td class="paycheck">{{ user.paycheck }}</td>
+					<td class="datepicker">{{ user.date_joined }}</td>
+				</tr>
+		{% endfor %}
+	</tbody>
+</table>
+<button id="button-users" type="button">Добавить данные</button>
+<div id="load"></div>
