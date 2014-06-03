@@ -11,8 +11,9 @@ $(document).ready(function(){
 			$('.table-responsive').html(data);
 			$('#hidden-message').hide();
 			// Adding table edit functionality
-			$('td').click(function(){
-				var class_id = $(this).attr('class');
+			$('td.clickable').click(function(){
+				var class_id = $(this).attr('field_name');
+				var class_name = $(this).attr('class');
 				var OriginalContent = $(this).text();
 				$(this).html('<input type="text" value="' + OriginalContent + '" />');
 				$(this).children().focus();
@@ -22,7 +23,7 @@ $(document).ready(function(){
 					if (e.which == 13) {
 						var NewContent = $(this).val();
 						$(this).parent().text(NewContent);
-						var data = tr_number+'-'+catid+'-'+NewContent+'-'+class_id;
+						var data = tr_number+'-'+catid+'-'+NewContent+'-'+class_id+'-'+class_name;
 						//Save changes through ajax
 						$.get('/table/update_data/',{'data':data});
 					}
@@ -34,14 +35,15 @@ $(document).ready(function(){
 			});
 			//Adding edit functionality for date field
 			$('.datepicker').click(function(){
-				var class_id = $(this).attr('class');
+				var class_id = $(this).attr('field_name');
+				var class_name = $(this).attr('class');
 				var OriginalContent = $(this).text();
 				var tr_number = $(this).prevAll('.id').html();
 				$(this).html('<input type="text" value="'+OriginalContent+'" />');
 				$(this).children().datepicker({onSelect:function(date){
 					$(this).parent().text(date);
 					var NewContent = date;
-					var data = tr_number+'-'+catid+'-'+NewContent+'-'+class_id;
+					var data = tr_number+'-'+catid+'-'+NewContent+'-'+class_id+'-'+class_name;
 					//Save changes through ajax
 					$.get('/table/update_data/',{'data':data});
 				}}).focus();

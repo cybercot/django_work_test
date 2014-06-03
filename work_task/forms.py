@@ -14,6 +14,6 @@ from work_task.models import Rooms
 class RoomsForm(forms.ModelForm):
     department = forms.CharField(max_length=100, help_text="Отдел"),
     spots = forms.IntegerField(help_text="Вместимость"),
-    spots_2 = forms.IntegerField(help_text="Вместимость_2"),
+    date = forms.DateField(widget = SelectDateWidget(), help_text="Дата"),
     class Meta:
         model = Rooms

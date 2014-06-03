@@ -9,4 +9,4 @@ rooms:
     fields:
         - {id: department, title: Отдел, type: char}
         - {id: spots, title: Вместимость, type: int}
-        - {id: spots_2, title: Вместимость_2, type: int}
+        - {id: date, title: Дата, type: date}

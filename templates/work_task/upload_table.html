@@ -1,23 +1,40 @@
-<h2 class="sub-header">Users</h2>
-<table class="table table-striped">
-	<thead>
-		<tr>
-			<th>id</th>
-			<th>Имя</th>
-			<th>Зарплата</th>
-			<th>Дата поступления на работу</th>
-		</tr>
-	</thead>
-	<tbody>
-		{% for user in users %}
+<h2 class="sub-header">{{ cat_name }}</h2>
+{% if help_text %}
+	<table class="table table-striped">
+		<thead>
+			<tr>
+				{% for text in help_text %}
+					<th>{{ text }}</th>
+				{% endfor %}
+			</tr>
+		</thead>
+		<tbody>
+			{% for key,value in class_attr.items %}
 				<tr>
-					<td class="id">{{ user.id }}</td>
-					<td class="name">{{ user.name }}</td>
-					<td class="paycheck">{{ user.paycheck }}</td>
-					<td class="datepicker">{{ user.date_joined }}</td>
+					{% for attr in value %}
+						{% if attr == value|first %}
+							{% for k,v in attr.items %}
+								<td field_name="{{ v }}" class="id">{{ k }}</td>
+							{% endfor %}
+						{% else %}
+							{% if forloop.counter == date_id %}
+								{% for k,v in attr.items %}
+									<td field_name="{{ v }}" class="datepicker">{{ k }}</td>
+								{% endfor %}
+							{% else %}
+								{% for k,v in attr.items %}
+									<td field_name="{{ v }}" class="clickable">{{ k }}</td>
+								{% endfor %}
+							{% endif %}
+						{% endif %}
+					{% endfor %}
 				</tr>
-		{% endfor %}
-	</tbody>
-</table>
+			{% endfor %}
+		</tbody>
+	</table>
+{% else %}
+	<strong>There are no tables yet! You can add one!</strong>
+	</br>
+{% endif %}
 <button id="button-users" type="button">Добавить данные</button>
 <div id="load"></div>
