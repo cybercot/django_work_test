@@ -1,14 +1,22 @@
-<div class="hero-unit">
-    <form class="form-signin span8" id="user_form" method="post" action="/table/upload_form/" enctype="multipart/form-data">
-            {% csrf_token %}
-            {% for field in form.visible_fields %}
-                {{ field.errors }}
-                {{ field.help_text }}<br />
-                {{ field }}<br />
-            {% endfor %}
-            <br />
-            <!-- Provide a button to click to submit the form. -->
-            <input class="btn btn-primary" type="submit" name="submit" value="Добавить новые данные"/>
-        </form>
+<form class="form-signin span8" id="ajaxform" method="post" action="{% url 'upload_form' %}" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    {% for field in form.visible_fields %}
+        <p>
+            {{ field.errors }}
+            {{ field.help_text }}<br />
+            {{ field }}<br />
+        </p>
+    {% endfor %}
+
+    <div id="loading" style="display:none;">
+        <span id="load_text">loading...</span>
     </div>
-</div>
+    <div id="form_ajax" style="display:none;">
+        <span>Form submit successfully.</span>
+    </div>
+    <div id="form_ajax_error" style="display:none;">
+        <span>Can not submit data due to errors.</span>
+    </div>
+    <p id="sendwrapper"><input class="btn btn-primary" type="submit" value="Добавить новые данные" id="sendbutton"/></p>
+</form>

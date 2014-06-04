@@ -26,6 +26,11 @@
       <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
     <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
+    <style>
+        #form_ajax_error, .errorlist {
+            color: red;
+        }
+    </style>
   </head>
 
   <body>
@@ -62,5 +67,8 @@
     <script src="{% static 'js/bootstrap.min.js' %}"></script>
     <script src="http://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
     <script src="{% static 'js/ajax.js' %}"></script>
+    <script src="{% static 'js/edit_table.js' %}"></script>
+    <script src="{% static 'js/forms.js' %}"></script>
+    <script type="text/javascript" src="http://malsup.github.com/min/jquery.form.min.js"></script>
   </body>
 </html>

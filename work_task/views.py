@@ -8,6 +8,13 @@ from work_task.forms import *
 import yaml
 from django.db.models.loading import get_model
 import re
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
+import json
+import time
+from django.shortcuts import render
+from django.http import HttpResponseBadRequest
+from django.conf import settings
 
 def table(request):
 	# View for index page
@@ -18,6 +25,7 @@ def table(request):
 		classes.append(class_name.capitalize())
 	return render_to_response('work_task/base.html', {'classes':classes}, context)
 
+@method_decorator(csrf_exempt)
 def upload_table(request):
 	# View for upload table functionality
 	context = RequestContext(request)
@@ -28,9 +36,9 @@ def upload_table(request):
 	class_attr = {}
 	# Id of date field
 	date_id=''
-	if request.method == 'GET':
+	if request.method == 'POST':
 		# Get model name
-		cat_name = request.GET['category_id']
+		cat_name = request.POST['category_id']
 	if cat_name:
 		# Get model
 		my_model = get_model('work_task',cat_name)
@@ -79,29 +87,36 @@ def update_data(request):
 				row.save()
 	return HttpResponse(error_message)
 
-def upload_form(request):
-	# View for upload forms
-	context = RequestContext(request)
-	schema = yaml.load(open('test.yaml'))
-	classes = []
-	for class_name in schema:
-		classes.append(class_name.capitalize())
-	cat_name = None
-	if request.method == 'GET':
-		# Get model name
-		cat_name = request.GET['category_id']
-		cat_name+='Form'
-		form = eval(cat_name)()
-	else:
-		class_name = request.POST.get('model_name')
-		class_name+='Form'
-		form = eval(class_name)(request.POST)
-		if form.is_valid():
-			form.save(commit=True)
-			return HttpResponseRedirect('/table/')
-		else:
-			return render_to_response('work_task/form_error.html', {'form':form, 'classes':classes}, context)
-	return render_to_response('work_task/upload_form.html', {'form':form}, context)
+def upload_form(request):	
+    if request.POST:
+        if settings.DEBUG:
+            time.sleep(2)  # Only for load demo
+        class_name = request.POST.get('model_name')
+        class_name+='Form'
+        form = eval(class_name)(request.POST)
+        if form.is_valid():
+        	form.save(commit=True)
+        	# Only executed with jQuery form request
+        	if request.is_ajax():
+        		return HttpResponse('OK')
+        	else:
+        		pass
+        else:
+        	if request.is_ajax():
+        		# Prepare JSON for parsing
+        		errors_dict = {}
+        		if form.errors:
+        			for error in form.errors:
+        				e = form.errors[error]
+        				errors_dict[error] = unicode(e)
+        		return HttpResponseBadRequest(json.dumps(errors_dict))
+        	else:
+        		pass
+    else:
+        cat_name = request.GET['category_id']
+        cat_name+='Form'
+        form = eval(cat_name)()
+    return render(request, 'work_task/upload_form.html', {'form':form})
 
 def test_data(data,type):
 	if type == "<type 'datetime.date'>":
