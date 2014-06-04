@@ -1,5 +1,6 @@
 <h2 class="sub-header">{{ cat_name }}</h2>
-{% if help_text %}
+<div id='table-error'></div>
+{% if class_attr %}
 	<table class="table table-striped">
 		<thead>
 			<tr>
@@ -36,5 +37,5 @@
 	<strong>There are no tables yet! You can add one!</strong>
 	</br>
 {% endif %}
-<button id="button-users" type="button">Добавить данные</button>
+<button id="button-users" class="btn btn-mini btn-primary" type="button">Добавить данные</button>
 <div id="load"></div>

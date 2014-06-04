@@ -51,23 +51,24 @@ def main(schema_file):
 	file.write('#!/usr/bin/env python2\n')
 	file.write('# -*- coding: utf-8 -*-\n')
 	file.write('from django import forms\n')
+	file.write('from work_task.models import *\n')
 	file.write('from django.forms.extras.widgets import SelectDateWidget\n')
 	file.write('\n')
 	for class_name in schema:
-		file.write('from work_task.models import '+class_name.capitalize()+'\n')
 		file.write('class '+class_name.capitalize()+'Form(forms.ModelForm):\n')
 		for row in schema[class_name]['fields']:
 			name = row['id']
 			help_text = row['title']
 			if row['type'] == 'char':
 				file.write('    '+name+' = forms.CharField(max_length=100, help_text="'
-					+smart_str(help_text)+'"),\n')
+					+smart_str(help_text)+'")\n')
 			elif row['type'] == 'int':
 				file.write('    '+name+' = forms.IntegerField(help_text="'
-					+smart_str(help_text)+'"),\n')
+					+smart_str(help_text)+'")\n')
 			elif row['type'] == 'date':
-				file.write('    '+name+' = forms.DateField(widget = SelectDateWidget(), help_text="'
-					+smart_str(help_text)+'"),\n')
+				file.write('    '+name+' = forms.DateField(widget=SelectDateWidget(), help_text="'
+					+smart_str(help_text)+'")\n')
+		file.write('    model_name = forms.CharField(widget=forms.TextInput(attrs={"readonly":"readonly"}), initial = "'+class_name.capitalize()+'")\n')
 		file.write('    class Meta:\n        model = '+class_name.capitalize())
 		file.write('\n')
 

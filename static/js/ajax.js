@@ -25,7 +25,13 @@ $(document).ready(function(){
 						$(this).parent().text(NewContent);
 						var data = tr_number+'-'+catid+'-'+NewContent+'-'+class_id+'-'+class_name;
 						//Save changes through ajax
-						$.get('/table/update_data/',{'data':data});
+						$.get('/table/update_data/',{'data':data}, function(data){
+							if (data == 'Error!!!') {
+								$('#table-error').html('<font color="red">'+data+'</font>').fadeOut(2000)
+							} else {
+								$('#table-error').html('<font color="green">'+data+'</font>').fadeOut(2000)
+							}
+						});
 					}
 				});
 				//Preserve old data when user didn't click 'enter' key
@@ -45,13 +51,21 @@ $(document).ready(function(){
 					var NewContent = date;
 					var data = tr_number+'-'+catid+'-'+NewContent+'-'+class_id+'-'+class_name;
 					//Save changes through ajax
-					$.get('/table/update_data/',{'data':data});
+					$.get('/table/update_data/',{'data':data}, function(data){
+						if (data == 'Error!!!'){
+							$('#table-error').html('<font color="red">'+data+'</font>').fadeOut(2000)
+						} else {
+							$('#table-error').html('<font color="green">'+data+'</font>').fadeOut(2000)
+						}
+					});
 				}}).focus();
 			});
 			$('#button-users').click(function(){
-				$('#load').text('This is user form');
 				$(this).hide();
-			});
+				$.get('/table/upload_form', {'category_id':catid}, function(data){
+					$('#load').html(data);
+				});
+			})
 		});
 	});
 });

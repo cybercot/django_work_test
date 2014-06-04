@@ -2,11 +2,12 @@
 # -*- coding: utf-8 -*-
 from django.template import RequestContext
 from django.shortcuts import render_to_response
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from work_task.models import *
 from work_task.forms import *
 import yaml
 from django.db.models.loading import get_model
+import re
 
 def table(request):
 	# View for index page
@@ -21,7 +22,6 @@ def upload_table(request):
 	# View for upload table functionality
 	context = RequestContext(request)
 	cat_name = None
-	response_data = None
 	# List for column names
 	help_text = ['id']
 	# List for values
@@ -36,23 +36,28 @@ def upload_table(request):
 		my_model = get_model('work_task',cat_name)
 		# Get objects
 		models = my_model.objects.order_by('id')
-		for model in models:
-			class_attr[model]=[]
+		if models:
+			for model in models:
+				class_attr[model]=[]
+				for f in model._meta.fields:
+					class_attr[model].append({getattr(model,f.name):f.name})
+			for i in range(1,len(model._meta.fields)):
+				help_text.append(model._meta.fields[i].help_text)
+			n = 0
 			for f in model._meta.fields:
-				class_attr[model].append({getattr(model,f.name):f.name})
-		for i in range(1,len(model._meta.fields)):
-			help_text.append(model._meta.fields[i].help_text)
-		n = 0
-		for f in model._meta.fields:
-			n+=1
-			if str(type(getattr(model,f.name))) == "<type 'datetime.date'>":
-				date_id = n
-	return render_to_response('work_task/upload_table.html', {'help_text':help_text,'class_attr':class_attr, 
+				n+=1
+				if str(type(getattr(model,f.name))) == "<type 'datetime.date'>":
+					date_id = n
+			return render_to_response('work_task/upload_table.html', {'help_text':help_text,'class_attr':class_attr, 
+		'cat_name':cat_name, 'date_id':date_id,}, context)
+		else:
+			return render_to_response('work_task/upload_table.html', {'help_text':help_text,'class_attr':class_attr, 
 		'cat_name':cat_name, 'date_id':date_id,}, context)
 		
 
 def update_data(request):
 	# View for update data in tables
+	error_message=''
 	context = RequestContext(request)
 	cat_name = None
 	if request.method == "GET":
@@ -61,15 +66,62 @@ def update_data(request):
 		my_model = get_model('work_task',cat_name)
 		row = my_model.objects.get(id=int(cat_id))
 		if class_name == 'datepicker':
-			m,d,y = newContent.split('/')
-			newContent = y+'-'+m+'-'+d
-			setattr(row,class_id,newContent)
+			test, error_message = test_data(newContent,"<type 'datetime.date'>")
+			if test:
+				m,d,y = newContent.split('/')
+				newContent = y+'-'+m+'-'+d
+				setattr(row,class_id,newContent)
+				row.save()
 		else:
-			setattr(row,class_id,newContent)
-		row.save()
-	return HttpResponse("Hello")
+			test, error_message = test_data(newContent,str(type(getattr(row,class_id))))
+			if test:
+				setattr(row,class_id,newContent)
+				row.save()
+	return HttpResponse(error_message)
 
-def add_users(request):
+def upload_form(request):
+	# View for upload forms
 	context = RequestContext(request)
-	form = UsersForm()
-	return render_to_response('work_task/add_users.html', {'form':form}, context)
+	schema = yaml.load(open('test.yaml'))
+	classes = []
+	for class_name in schema:
+		classes.append(class_name.capitalize())
+	cat_name = None
+	if request.method == 'GET':
+		# Get model name
+		cat_name = request.GET['category_id']
+		cat_name+='Form'
+		form = eval(cat_name)()
+	else:
+		class_name = request.POST.get('model_name')
+		class_name+='Form'
+		form = eval(class_name)(request.POST)
+		if form.is_valid():
+			form.save(commit=True)
+			return HttpResponseRedirect('/table/')
+		else:
+			return render_to_response('work_task/form_error.html', {'form':form, 'classes':classes}, context)
+	return render_to_response('work_task/upload_form.html', {'form':form}, context)
+
+def test_data(data,type):
+	if type == "<type 'datetime.date'>":
+		a = re.compile("^[0-9]{2}\/[0-9]{2}\/[0-9]{4}$")
+		if a .match(data):
+			return (True, 'Correct!!!')
+		else:
+			return (False, 'Error!!!')
+		return (True, 'Correct!!!')
+	elif type == "<type 'int'>":
+		a = re.compile("^([0-9]+)$")
+		if a.match(data):
+			return (True, 'Correct!!!')
+		else:
+			return (False, 'Error!!!')
+	elif type == "<type 'unicode'>":
+		a = re.compile("^[A-z0-9]+$")
+		if a.match(data):
+			return (True, 'Correct!!!')
+		else:
+			return (False, 'Error!!!')
+	else:
+		return (False, 'Error!!!')
